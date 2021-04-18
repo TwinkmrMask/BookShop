@@ -1,0 +1,39 @@
+﻿<Window x:Class="task_14._04.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:task_14._04"
+        mc:Ignorable="d"
+        Title="List of books" Height="450" Width="800">
+    <Grid>
+        <Label x:Name="lbl" Content="Сортировать по: " Margin="10,10,592,363" FontSize="14" FontFamily="Times New Roman"/>
+        <ComboBox Name="KeyOfSort" FontFamily="Times New Roman" FontSize="14" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="154" Margin="208,0,0,378" Height="32">
+            <ComboBoxItem Name="id" Selected="id_Selected">
+                <TextBlock Text="По номеру"/>
+            </ComboBoxItem>
+            <ComboBoxItem Name="author" Selected="author_Selected">
+                <TextBlock Text="По автору"/>
+            </ComboBoxItem>
+            <ComboBoxItem Name="title" Selected="title_Selected">
+                <TextBlock Text="По названию"/>
+            </ComboBoxItem>
+            <ComboBoxItem Name="year" Selected="year_Selected">
+                <TextBlock Text="По году издания"/>
+            </ComboBoxItem>
+        </ComboBox>
+        <ScrollViewer Margin="0,76,0,0" VerticalAlignment="Stretch" Height="358" FlowDirection="RightToLeft">
+            <DataGrid x:Name="ListOfBooks" GridLinesVisibility="None" Background="White" RowBackground="Transparent" CanUserAddRows="False" VerticalAlignment="Stretch" FlowDirection="LeftToRight">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button x:Name="buy" Background="Transparent" BorderBrush="Transparent" Click="buy_Click">Купить</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+    </Grid>
+</Window>

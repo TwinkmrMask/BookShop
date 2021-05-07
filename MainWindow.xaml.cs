@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
-using System;
 
 namespace task_14._04
 {
-    public partial class MainWindow
-    {
-        readonly (string links, string data) data = ("links", "database");
-
-        List<Books> books = default;
+    public partial class MainWindow : IDefaultSettings
+    {   
+        List<Book> books = default;
         public MainWindow()
         {
             InitializeComponent();
-            using (PlatformDataBase dataBase = new PlatformDataBase(data.links, data.data))
-                dataBase.EachBooks();
+            using (PlatformDataBase dataBase = new PlatformDataBase(
+                ((IDefaultSettings)this).path + ((IDefaultSettings)this).data.links,
+                ((IDefaultSettings)this).path + ((IDefaultSettings)this).data.data))
+                this.books = dataBase.EachBooks(books = new List<Book>());
+            insert(ref books);
             
         }
 
-        void insert(ref List<Books> books) => ListOfBooks.ItemsSource = books.OrderBy(x => x.id);
-        private void delete(ref List<Books> books, Books book)
+        void insert(ref List<Book> books) => ListOfBooks.ItemsSource = books.OrderBy(x => x.id);
+        private void delete(ref List<Book> books, Book book)
         {
             books.Remove(book);
             ListOfBooks.ItemsSource = books;
@@ -27,7 +27,7 @@ namespace task_14._04
         }
         private void buy_Click(object sender, RoutedEventArgs e)
         {
-            Books book = ListOfBooks.SelectedItem as Books;
+            Book book = ListOfBooks.SelectedItem as Book;
             delete(ref books, book);
         }
 
@@ -45,12 +45,17 @@ namespace task_14._04
 
         private void refresh_Click(object sender, RoutedEventArgs e)
         {
-            setData(data.links, data.data);
-            using (PlatformDataBase dataBase = new PlatformDataBase(data.links, data.data))
-                dataBase.EachBooks();
+            setData(
+                ((IDefaultSettings)this).path + ((IDefaultSettings)this).data.links,
+                ((IDefaultSettings)this).path + ((IDefaultSettings)this).data.data);
+
+            using (PlatformDataBase dataBase = new PlatformDataBase((
+                (IDefaultSettings)this).path + ((IDefaultSettings)this).data.links,
+                ((IDefaultSettings)this).path + ((IDefaultSettings)this).data.data))
+                books =  dataBase.EachBooks(books);
         }
     }
-    class Books
+    public class Book
     {
         public int id { get; set; }
         public string author { get; set; }  

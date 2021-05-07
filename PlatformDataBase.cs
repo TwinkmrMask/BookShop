@@ -13,11 +13,12 @@ using Platform.Data.Doublets.CriterionMatchers;
 using Platform.Data.Doublets.Memory.Split.Specific;
 using TLinkAddress = System.UInt32;
 using System.Windows;
+using System.Collections.Generic;
 
 namespace task_14._04
 {
     //Part of the code, along with comments, is taken from https://github.com/linksplatform/Comparisons.SQLiteVSDoublets/commit/289cf361c82ab605b9ba0d1621496b3401e432f7
-    public class PlatformDataBase : DisposableBase
+    public class PlatformDataBase : DisposableBase, IDefaultSettings
     {
 
         string indexFileName;
@@ -79,31 +80,43 @@ namespace task_14._04
                 this.links.GetOrCreate(
                 this.links.GetOrCreate(ConvertToSequence(id), ConvertToSequence(author)),
                 this.links.GetOrCreate(ConvertToSequence(title), ConvertToSequence(year))));
+        
+        private bool isLinks(Link<TLinkAddress> query) {
+            if (this.links.Count(query) == 0)
+                return false;
+            else return true;
+        }
 
-        public void EachBooks()
+        public List<Book> EachBooks(List<Book> books)
         {
-            var id = "";
-            var author = "";
-            var title = "";
-            var year = "";
-
+            string id = "", author = "", title = "", year = "";
             var query = new Link<TLinkAddress>(this.links.Constants.Any, _bookMarker, this.links.Constants.Any);
-            this.links.Each((link) =>
+            if (!isLinks(query))
             {
-                var doubletOfDoublets = link[this.links.Constants.TargetPart];
-                var IdAuthor = this.links.GetSource(doubletOfDoublets);
-                var TitleYear = this.links.GetTarget(doubletOfDoublets);
+                var result = MessageBox.Show("База данных пуста\nЗаполнить?", "Предупреждение", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    using (Handler xml = new Handler())
+                        xml.SetData(indexFileName, dataFileName);
+                }
+                else books.Add(default);
+            }
+                this.links.Each((link) =>
+                {
+                    var doubletOfDoublets = link[this.links.Constants.TargetPart];
+                    var IdAuthor = this.links.GetSource(doubletOfDoublets);
+                    var TitleYear = this.links.GetTarget(doubletOfDoublets);
 
-                id = ConvertToString(this.links.GetSource(IdAuthor));
-                author = ConvertToString(this.links.GetSource(IdAuthor));
+                    id = ConvertToString(this.links.GetSource(IdAuthor));
+                    author = ConvertToString(this.links.GetTarget(IdAuthor));
 
-                title = ConvertToString(this.links.GetSource(TitleYear));
-                year = ConvertToString(this.links.GetTarget(TitleYear));
+                    title = ConvertToString(this.links.GetSource(TitleYear));
+                    year = ConvertToString(this.links.GetTarget(TitleYear));
 
-                return this.links.Constants.Break;
-            }, query);
-
-            MessageBox.Show($"{id} | {author} | {title} | {year}");
+                    books.Add(new Book { id = int.Parse(id), author = author, title = title, year = int.Parse(year) });
+                    return this.links.Constants.Continue;
+                }, query);
+                return books;            
         }
 
         protected override void Dispose(bool manual, bool wasDisposed)

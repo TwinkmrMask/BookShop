@@ -25,6 +25,7 @@ namespace task_14._04
         private readonly TLinkAddress _meaningRoot;
         private readonly TLinkAddress _unicodeSymbolMarker;
         private readonly TLinkAddress _unicodeSequenceMarker;
+        private uint _bookMarker;
         private readonly RawNumberToAddressConverter<TLinkAddress> _numberToAddressConverter;
         private readonly AddressToRawNumberConverter<TLinkAddress> _addressToNumberConverter;
         private readonly IConverter<string, TLinkAddress> _stringToUnicodeSequenceConverter;
@@ -51,6 +52,7 @@ namespace task_14._04
             this._meaningRoot = GerOrCreateMeaningRoot(currentMappingLinkIndex++);
             this._unicodeSymbolMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
             this._unicodeSequenceMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
+            this._bookMarker = GetOrCreateNextMapping(currentMappingLinkIndex++);
             // Create converters that are able to convert link's address (UInt64 value) to a raw number represented with another UInt64 value and back
             this._numberToAddressConverter = new RawNumberToAddressConverter<TLinkAddress>();
             this._addressToNumberConverter = new AddressToRawNumberConverter<TLinkAddress>();
@@ -67,13 +69,15 @@ namespace task_14._04
         }
         private TLinkAddress GerOrCreateMeaningRoot(TLinkAddress meaningRootIndex) => links.Exists(meaningRootIndex) ? meaningRootIndex : links.CreatePoint();
         private TLinkAddress GetOrCreateNextMapping(TLinkAddress currentMappingIndex) => links.Exists(currentMappingIndex) ? currentMappingIndex : links.CreateAndUpdate(_meaningRoot, links.Constants.Itself);
+
         public string ConvertToString(TLinkAddress sequence) => _unicodeSequenceToStringConverter.Convert(sequence);
         public TLinkAddress ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         public void Delete(TLinkAddress link) => links.Delete(link);
         public void AddBooks(string id, string author, string title, string year) =>
-            this.links.GetOrCreate(
+            this.links.GetOrCreate( this.links.GetOrCreate(
                 this.links.GetOrCreate(ConvertToSequence(id), ConvertToSequence(author)),
-                this.links.GetOrCreate(ConvertToSequence(title), ConvertToSequence(year))
+                this.links.GetOrCreate(ConvertToSequence(title), ConvertToSequence(year))),
+                _bookMarker
                 );
 
         public void EachBooks()
@@ -83,10 +87,10 @@ namespace task_14._04
             var title = "";
             var year = "";
 
-            var query = new Link<TLinkAddress>(this.links.Constants.Any, this.links.Constants.Any, this.links.Constants.Any);
+            var query = new Link<TLinkAddress>(this.links.Constants.Any, this.links.Constants.Any, _bookMarker);
             this.links.Each((link) =>
             {
-                var doubletOfDoublets = link[this.links.Constants.TargetPart];
+                var doubletOfDoublets = link[this.links.Constants.SourcePart];
                 var IdAuthor = this.links.GetSource(doubletOfDoublets);
                 var TitleYear = this.links.GetTarget(doubletOfDoublets);
 

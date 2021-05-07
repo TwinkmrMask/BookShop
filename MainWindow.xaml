@@ -35,5 +35,6 @@
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>
+        <Button x:Name="refresh" Content="Обновить" HorizontalAlignment="Left" Margin="710,28,0,0" VerticalAlignment="Top" Width="80" Height="24" Click="refresh_Click"/>
     </Grid>
 </Window>

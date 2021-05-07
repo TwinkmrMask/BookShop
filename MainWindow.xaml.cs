@@ -1,19 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Linq;
+using System;
+
 namespace task_14._04
 {
     public partial class MainWindow
     {
+        readonly (string links, string data) data = ("links", "database");
 
-        List<Books> books;
+        List<Books> books = default;
         public MainWindow()
         {
             InitializeComponent();
-
-            using(DataBase data =  new DataBase())
-                books = data.GetData();
-            insert(ref books);
+            using (PlatformDataBase dataBase = new PlatformDataBase(data.links, data.data))
+                dataBase.EachBooks();
+            
         }
 
         void insert(ref List<Books> books) => ListOfBooks.ItemsSource = books.OrderBy(x => x.id);
@@ -34,6 +36,19 @@ namespace task_14._04
         private void author_Selected(object sender, RoutedEventArgs e) => ListOfBooks.ItemsSource = books.OrderBy(x => x.author);
         private void title_Selected(object sender, RoutedEventArgs e) => ListOfBooks.ItemsSource = books.OrderBy(x => x.title);
         private void year_Selected(object sender, RoutedEventArgs e) => ListOfBooks.ItemsSource = books.OrderBy(x => x.year);
+        private void setData(string links, string database)
+        {
+            using(Handler xml = new Handler())
+                xml.SetData(links, database);
+        }
+
+
+        private void refresh_Click(object sender, RoutedEventArgs e)
+        {
+            setData(data.links, data.data);
+            using (PlatformDataBase dataBase = new PlatformDataBase(data.links, data.data))
+                dataBase.EachBooks();
+        }
     }
     class Books
     {

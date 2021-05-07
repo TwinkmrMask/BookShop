@@ -74,11 +74,11 @@ namespace task_14._04
         public TLinkAddress ConvertToSequence(string @string) => _stringToUnicodeSequenceConverter.Convert(@string);
         public void Delete(TLinkAddress link) => links.Delete(link);
         public void AddBooks(string id, string author, string title, string year) =>
-            this.links.GetOrCreate( this.links.GetOrCreate(
+            
+            this.links.GetOrCreate(_bookMarker,
+                this.links.GetOrCreate(
                 this.links.GetOrCreate(ConvertToSequence(id), ConvertToSequence(author)),
-                this.links.GetOrCreate(ConvertToSequence(title), ConvertToSequence(year))),
-                _bookMarker
-                );
+                this.links.GetOrCreate(ConvertToSequence(title), ConvertToSequence(year))));
 
         public void EachBooks()
         {
@@ -87,10 +87,10 @@ namespace task_14._04
             var title = "";
             var year = "";
 
-            var query = new Link<TLinkAddress>(this.links.Constants.Any, this.links.Constants.Any, _bookMarker);
+            var query = new Link<TLinkAddress>(this.links.Constants.Any, _bookMarker, this.links.Constants.Any);
             this.links.Each((link) =>
             {
-                var doubletOfDoublets = link[this.links.Constants.SourcePart];
+                var doubletOfDoublets = link[this.links.Constants.TargetPart];
                 var IdAuthor = this.links.GetSource(doubletOfDoublets);
                 var TitleYear = this.links.GetTarget(doubletOfDoublets);
 

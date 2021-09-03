@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Platform.Data" Version="0.3.0" />
-    <PackageReference Include="Platform.Data.Doublets" Version="0.6.7" />
+    <PackageReference Include="Platform.Data.Doublets.Sequences" Version="0.0.1" />
   </ItemGroup>
 
   <ItemGroup>
